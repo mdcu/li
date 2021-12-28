@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <!-- strip address bar-->
+        <meta name="viewport" content="width=device-width"/>
+        <!--NO SCALE ALLOW-->
+        <meta name="apple-mobile-web-app-title" content="MDCU Portal">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed|Sarabun&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Roboto Condensed','Sarabun', sans-serif;
+                font-size: 16px;
+                word-break: break-word;
+            }
+            table{table-layout:fixed;width:95vw;}
+            tr:nth-child(even) {
+                background: #DDD
+            }
+
+            tr:nth-child(odd) {
+                background: #FFF
+            }
+
+            .normal {
+                display: inherit
+            }
+
+            .disappear {
+                display: none
+            }
+            td:nth-child(1){width:120px;}
+            td:nth-child(2){min-width:200px;width:20vw;}
+            td:nth-child(3){width:auto;}
+            td img {max-width:120px;max-height:120px}
+            footer {
+              border-top:1px solid grey;
+              margin-top: 2em;
+            }
+            footer img {
+              height: 100px;margin: 0.5em;box-shadow: 2px 2px 7px grey;
+            }
+            header {
+              background-color: navy;
+              color: gold;
+              padding:0.5em;
+            }
+            header h4 {margin:0px;padding:0px;}
+
+			p {line-break:anywhere;}
+
+            #filterX {font-size:2em;width:50vw;}
+            #logo {height:3em;}
+        </style>
+        <script src=full_table.js></script>
+        <script>
+
+            function filterX(KEY) {
+              let oKEY = KEY
+            	KEY = KEY.toLowerCase().split(" ");
+                //selected_index = [];
+                not_selected_index = [];
+                for(let i in origin){
+                	let s = origin[i].toString().toLowerCase();
+                	for(let k in KEY){
+                		if(s.search(KEY[k]) < 0){
+                			not_selected_index.push(i*1);
+                			break;
+                		}
+                	}
+                }
+                selected_index = full_index.filter(function(x){return ! not_selected_index.includes(x)});
+                //console.log(not_selected_index);
+                //console.log(selected_index);
+                if(selected_index.length > 0){
+                  if(!recent.includes(oKEY))recent.push(oKEY)
+                  if(recent.length>10) recent = recent.shift(1)
+                  localStorage["recent"] = JSON.stringify(recent)
+                }
+                pageBuilder(selected_index);
+            }
+
+            function pageBuilder(ui){
+            	document.getElementById("search_number").innerHTML = ui.length;
+            	let k = 100;
+            	document.getElementById("pages").innerHTML = "Pages: ";
+            	for(let i = 0; i < Math.ceil(ui.length/k);i++){
+            		document.getElementById("pages").innerHTML += `<a href="#" onclick="tableBuilder(selected_index,`+i+`,`+k+`)">`+(i+1)+`</a> | `
+            	};
+              if(recent.length > 0  ){
+                document.getElementById("pages").innerHTML += "<br> recent search: "
+                recent.forEach(k => {
+                  document.getElementById("pages").innerHTML += `<a href="#" onclick="filterX('${k}')">`+k+`</a> | `
+                })
+              }
+            	tableBuilder(selected_index,0,k);
+            }
+
+            function tableBuilder(selected_index,pi,k){
+            	document.getElementById("prometeus").innerHTML = "";
+            	for(let r = pi*k; r < Math.min(pi*k+k,selected_index.length); r++){
+            		document.getElementById("prometeus").appendChild(rowBuilder(selected_index[r]))
+            	}
+            }
+
+            function rowBuilder(r){
+            	let row = origin[r];
+            	let newRow = document.createElement("tr");
+            	newRow.innerHTML = `<td><img src='`+row[0]+`'><td><a href='`+row[2]+`' target=_blank>`+row[1]+`</a></td><td><p>`+(row[3].length > 500? (row[3].substr(0,300)+"..."):row[3])+`</p><p>`+row[4]+`/`+row[5]+`</p></td>`;
+            	return newRow;
+            }
+            ;</script>
+    </head>
+    <body>
+        <header>
+          <h4><!--<img id=logo src="image/KMP2_logo.png">-->KCMH + MDCU Portal</h4>
+          <input id="filterX" onchange="filterX(this.value)" placeholder="input search term here...">
+        </header>
+        <p>Total results: <span id="search_number">0</span></p>
+        <p id="pages"></p>
+        <table id="prometeus"></table>
+        <footer>
+          <h3>These medias belong to the following sources:</h3>
+          <a href="https://www.youtube.com/user/PRMDCU" target=_blank><img src="https://yt3.ggpht.com/udbsW6whUuDw5EbTLI-DkWudRYS6Lx3CDjiKUpLhu396O9rd-U7yn7fnVbxoOXVPxG678_dl=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UC7UfjMW9vtleDGXPv2Fdu5Q" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLQ4u9AFaLtvqrp8WKCzaMwZBBedqK_x0CEqz86e=s176-c-k-c0x00ffffff-no-rj-mo"></a>
+          <a href="https://www.youtube.com/channel/UCoEeQHLJlEADxoaDn9Gyi3w" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLSZrSz5RYS40PTSfkIoQ30tEw1XxJgKKD1ijCR-=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCG942USCUV3eirfQpQoHC3A" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLR50D-6u2YRtUKT-1ClsF1aWz7f8lRsPnS7WWau=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCx-LfuCFhg2q02BNpM-JUjQ" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLRAmBiZVz5ZzyfYGmutPa5feNPgYG9lnWH4oA=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UC0YbXBmU6yNBI0WJqRsWXPw" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLRqUUaf-sKHmwRvBBp8_5SNZiG3M1F1B_Hz72wsjw=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UC7fvUPjwsRzjRhO05wOHIRA" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLQtO230i8KO0M7WzBSyd0Pa4g4xtJklyuVZh1Fk=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCVDXKZTM4TKmlq509mNsTcA" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLTSfBUWWMfYTN_PvbsKKxyLNqGtF5XqpQNb_vQW=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCxDbN3PIoSITW-Uwmu2D4mg" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLSsrwADz-4RV9HhRO9KvQ_MJ-nkyHox4UoHqw=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCKiaAK0PCnsFJZTnnL0kUwQ" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLSIrO6-rA2F9B6jb84gUKx_MWyZ3iqZigpTmiIj=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UChTjvHVqjUTpn5tL3dPJy8A" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLR6wvWu5UvSMeZ-IzajFfJIejhjl5HQ6L75iiAk=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCJOfhZ2BFUuhrL9yVWi6_XA" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLQ7iZ1ckPfxOE8csZM92a32sdKkf46yjV85E3PsjA=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCFQn3fuvEbsYbWwWvaS7Cgw" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLQijg_yt9_0avVzYdwHuB4a4Z6h2-qVcDGLHg=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCqhwFDyGFVgonv-ekq7ZZoQ" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLTitsI3JnSwZh9jNwLAFUOJPnu33SdBKaS_hRGS=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCnNFSjrUJDSAgnU6Q-tJGKA" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLS6aP2cOrUs7i2YHxX4MEr30tGMrzfgx6V5zNBs=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCZNLQYjGe2iHtluRxpmGaaA" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLQZR3zB0PcftC2GVeiAXkZ_7bBkkTfYOxbtD5Epyg=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UC6wo_dhON5KeReaNYftig-w" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLTAZKxlXzOd2pV1Ah0yqPg0qUCyB-iyRJeMWz8y=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCGcNZfZQVSwX5_80nLTRZYg" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLTKQfOuvlrJaw_Ex_r4VFU_QGFsqyk9ZK_AeZ9Z=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCv3rrj_Rq7F8yK5S1auMXiw" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLTho_WPMCBsMrp0q5RUNwl9nsUKucD679l3cZ95=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCqJCHa5AITDidvW9KRNXx6w" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLQn27JsSmZb0wVSUqt9mXLqrRzzigg2feRFBchs=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCqp3fPi2fFptnv2h4k2tjlQ" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLRc3qsgLfzVXAbNlBTSIkX0VZXQ4ji1b2sRsr_ASw=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://www.youtube.com/channel/UCUNk1fPbKpbJQ9SJ7N4yjnQ" target=_blank><img src="https://yt3.ggpht.com/ytc/AKedOLTwCfdEF7fSDetX7qLpo3oRIIN0VSUA4wzc7fYh=s88-c-k-c0x00ffffff-no-rj"></a>
+          <a href="https://chulalongkornhospital.go.th/kcmh/line/" target=_blank><img src="image/kcmh_info.png"></a>
+          <a href="https://open.spotify.com/show/030BRh2EsSsays5q0AhXq9" target="_blank"><img src="https://i.scdn.co/image/ab6765630000f68db0a716c40ce824a7e8ca0cfa"></a>
+          <p>All links and data are programmatically extracted and may have not been screened for inappropriateness. For any support please contact aisawan.p@chula.md.</p>
+        </footer>
+<script>
+	var full_index = [...Array(origin.length).keys()];
+	var selected_index = full_index;
+  let recent = localStorage["recent"]? JSON.parse(localStorage["recent"]):[]
+	pageBuilder(full_index);
+</script>
+</body></html>
