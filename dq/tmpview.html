@@ -1,0 +1,32 @@
+<html>
+<body>
+<div id=geek><textarea></textarea></div>
+<button onclick="convert()">convert</button>
+<div id=wizard></div>
+<script>
+function convert(){
+    let out = document.getElementById("wizard");
+    out.innerHTML = "";
+    let doc = JSON.parse(document.querySelector("#geek textarea").value);
+    doc.root.children.forEach(child => {
+        let current = null;
+        switch(child.type){
+            case "paragraph": current = out.appendChild(document.createElement("p")); break;
+            case "heading": current = out.appendChild(document.createElement(child.tag)); break;
+            case "list": current = out.appendChild(document.createElement(child.tag)); break;
+            default: break;
+        }
+        if(!current) {console.log(child)} else{
+            if(child.children.length == 1){
+                current.innerText = child.children[0].text;
+            }else{
+                console.log(child.children)
+                current.innerText = child.children.map(x => {return x.type+":"+(x.text?x.text:x.value)}).join("; ")
+            }
+        }
+        
+    })
+}
+</script>
+</body>
+<html>
