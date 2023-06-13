@@ -1,31 +1,80 @@
 <html>
+<head>
+  <style>
+    #container {display: flex;}
+    #left {flex: 1;}
+    #right {flex: 2;}
+    #geek textarea {width:100%;height:35vh;}
+    #beauty textarea {width:100%;height:60vh;}
+    #wizard {overflow-y: scroll;height:95vh;}
+  </style>
+</head>
 <body>
-<div id=geek><textarea></textarea></div>
-<button onclick="convert()">convert</button>
-<div id=wizard></div>
+  <div id="container">
+    <div id="left">
+      <div id=geek onchange="fromgeek()"><textarea></textarea></div>
+      <div id=beauty onchange="frombeauty()"><textarea></textarea></div>
+    </div>
+    <div id="right">
+      <<div id=wizard></div>
+    </div>
+  </div>
+
+
+
 <script>
-function convert(){
-    let out = document.getElementById("wizard");
-    out.innerHTML = "";
-    let doc = JSON.parse(document.querySelector("#geek textarea").value);
-    doc.root.children.forEach(child => {
-        let current = null;
-        switch(child.type){
-            case "paragraph": current = out.appendChild(document.createElement("p")); break;
-            case "heading": current = out.appendChild(document.createElement(child.tag)); break;
-            case "list": current = out.appendChild(document.createElement(child.tag)); break;
-            default: break;
-        }
-        if(!current) {console.log(child)} else{
-            if(child.children.length == 1){
-                current.innerText = child.children[0].text;
-            }else{
-                console.log(child.children)
-                current.innerText = child.children.map(x => {return x.type+":"+(x.text?x.text:x.value)}).join("; ")
-            }
-        }
-        
-    })
+
+function fromgeek(){
+	try{
+		let doc = JSON.parse(document.querySelector("#geek textarea").value);
+		document.querySelector("#beauty textarea").value = JSON.stringify(doc,null,2)
+		convert(doc);
+	}catch(error){
+		console.error("geek is invalid")
+	}
+}
+
+function frombeauty(){
+	try{
+		let doc = JSON.parse(document.querySelector("#beauty textarea").value);
+		document.querySelector("#geek textarea").value = JSON.stringify(doc)
+		convert(doc);
+	}catch(error){
+		console.error("beauty is invalid")
+	}
+}
+
+function nodise(children){
+	//console.log("nodise: ",children)
+	let out = document.createElement("div");
+	if(children.length==0) return out;
+	children.forEach(child => {
+		//console.log("for each:",child)
+		let current = null;
+        	switch(child.type){
+        		case "text": out.innerText += child.text;break;
+            		case "paragraph": current = out.appendChild(document.createElement("p")); break;
+            		case "heading": current = out.appendChild(document.createElement(child.tag)); break;
+            		case "list": current = out.appendChild(document.createElement(child.tag)); break;
+            		case "listitem": current = out.appendChild(document.createElement("li")); break;
+            		case "horizontalrule": out.appendChild(document.createElement("hr")); break;
+            		default: break;
+        	}
+        	if(!current) {
+        		console.log("no match: ",child)
+        	} else{
+            		current.appendChild(nodise(child.children));
+            		out.appendChild(current);
+            		//console.log("out:",out)
+        	}
+	})	
+	return out;
+}
+
+function convert(doc){
+    let wizard = document.getElementById("wizard");
+    wizard.innerHTML = "";
+    wizard.appendChild(nodise(doc.root.children));
 }
 </script>
 </body>
